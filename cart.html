@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ STORE-login</title>
+    <link rel="preconnect"href="https://fonts.googleapis.com">
+    <link rel="preconnect"href="https://fonts.gststic.com" crossorigin>
+    <link rel="https://fonts.googleapis.com/css2?family=poppins:weight@400;600;700&display=swap"rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">RAJ STORE</a>
+            <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="cart.html">CART</a>
+            <a href="login.html">LOGIN</a>
+            <a href="signup.html">SIGN UP</a>
+            <a href="profile.html">PROFILE</a>
+            </nav>
+        </nav>
+    </header>
+
+    <main class="cart-page">
+        <h1>Your cart</h1>
+        <div class="cart-container">
+            <div id="cart-items"></div>
+            <div class="total-section">
+                <h3>Total</h3>
+                <h3 id="total"></h3>
+                <button onclick="goToCheckout()" style="width:100%;padding:12px;background:#ff6b35;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:1rem;font-weight:700;margin-top:20px;transition:background 0.3s;" onmouseover="this.style.background='#ff5520'" onmouseout="this.style.background='#ff6b35'">Proceed to Checkout</button>
+            </div>
+        </div>
+    </main>
+     <script>
+    const cartContainer = document.getElementById("cart-items");
+    const totalElement = document.getElementById("total");
+
+    function goToCheckout() {
+      const cart = getCartFromLocal();
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+      window.location.href = 'checkout.html';
+    }
+
+    async function fetchCartFromApi() {
+      try {
+        const res = await fetch('/api/cart?user=guest');
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        return data.items || [];
+      } catch (err) {
+        return null; // fallback to localStorage
+      }
+    }
+
+    function renderCartFromArray(cart) {
+      let totalPrice = 0;
+      cartContainer.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = "<p class='empty-cart'>Your cart is empty.</p>";
+        totalElement.textContent = "₹0";
+      } else {
+        cart.forEach((item, index) => {
+          totalPrice += item.price * (item.quantity || 1);
+          const cartItem = document.createElement("div");
+          cartItem.classList.add("cart-item");
+          cartItem.innerHTML = `
+            <img src="${item.image}" alt="${item.name}" style="width:60px;height:60px;object-fit:cover;">
+            <div class="item-details">
+              <h4>${item.name}</h4>
+              <p>Quantity: <span class="qty">${item.quantity || 1}</span></p>
+              <p>Price: ₹${item.price}</p>
+              <div style="margin-top:8px;">
+                <button class="qty-btn" data-index="${index}" data-action="minus" style="padding:4px 8px;margin-right:5px;background:#ff9800;color:#fff;border:none;border-radius:3px;cursor:pointer;">−</button>
+                <button class="qty-btn" data-index="${index}" data-action="plus" style="padding:4px 8px;margin-right:10px;background:#4CAF50;color:#fff;border:none;border-radius:3px;cursor:pointer;">+</button>
+                <p class="remove btn" style="color:red;cursor:pointer;display:inline;" data-index="${index}">Remove</p>
+              </div>
+            </div>
+          `;
+          cartContainer.appendChild(cartItem);
+        });
+        totalElement.textContent = `₹${totalPrice.toFixed(2)}`;
+      }
+    }
+
+    function getCartFromLocal() {
+      return JSON.parse(localStorage.getItem("cart") || "[]");
+    }
+
+    function saveCartToLocal(cart) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function removeFromCart(index) {
+      let cart = getCartFromLocal();
+      cart.splice(index, 1);
+      saveCartToLocal(cart);
+      renderCart();
+    }
+
+    function updateQty(index, action) {
+      let cart = getCartFromLocal();
+      if (action === 'plus') cart[index].quantity = (cart[index].quantity || 1) + 1;
+      else if (action === 'minus' && (cart[index].quantity || 1) > 1) cart[index].quantity = (cart[index].quantity || 1) - 1;
+      saveCartToLocal(cart);
+      renderCart();
+    }
+
+    async function renderCart() {
+      const apiCart = await fetchCartFromApi();
+      if (apiCart) {
+        renderCartFromArray(apiCart);
+      } else {
+        const cart = getCartFromLocal();
+        renderCartFromArray(cart);
+      }
+    }
+
+    cartContainer.addEventListener("click", function (e) {
+      if (e.target.classList.contains("remove")) {
+        const index = e.target.getAttribute("data-index");
+        removeFromCart(Number(index));
+      } else if (e.target.classList.contains("qty-btn")) {
+        const index = e.target.getAttribute("data-index");
+        const action = e.target.getAttribute("data-action");
+        updateQty(Number(index), action);
+      }
+    });
+
+    renderCart();
+  </script>
+    <script src="app.js"></script>
+    </body>
+</html>

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ STORE - Orders & Sales</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .orders-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .order-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .stat-card .value {
+            font-size: 2.5rem;
+            color: #ff6b35;
+            font-weight: 700;
+        }
+        .orders-list {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .order-item-header {
+            font-weight: 700;
+            color: #333;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff6b35;
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            gap: 15px;
+        }
+        .order-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            gap: 15px;
+            align-items: center;
+        }
+        .order-cell {
+            padding: 10px;
+        }
+        .order-id {
+            font-weight: 600;
+            color: #ff6b35;
+            font-size: 0.9rem;
+        }
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .payment-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .payment-cod {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .payment-card {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        .payment-online {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        .order-total {
+            font-weight: 700;
+            color: #ff6b35;
+            font-size: 1.1rem;
+        }
+        .order-items {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        .order-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            background: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background: #ff6b35;
+            color: #fff;
+            border-color: #ff6b35;
+        }
+        .filter-btn:hover {
+            border-color: #ff6b35;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        .export-btn {
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .export-btn:hover {
+            background: #555;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .status-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .status-accepted {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .accept-btn {
+            background: #4caf50;
+            color: #fff;
+        }
+        .accept-btn:hover {
+            background: #45a049;
+        }
+        .accept-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .reject-btn {
+            background: #f44336;
+            color: #fff;
+        }
+        .reject-btn:hover {
+            background: #da190b;
+        }
+        .send-email-btn {
+            background: #2196f3;
+            color: #fff;
+        }
+        .send-email-btn:hover {
+            background: #0b7dda;
+        }
+        .send-email-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        @media (max-width: 1024px) {
+            .order-item,
+            .order-item-header {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .order-item,
+            .order-item-header {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">RAJ STORE</a>
+            <nav class="nav-links">
+                <a href="index.html">HOME</a>
+                <a href="cart.html">CART</a>
+                <a href="login.html">LOGIN</a>
+                <a href="signup.html">SIGN UP</a>
+                <a href="profile.html">PROFILE</a>
+                <a href="orders.html" style="color: #ff6b35; font-weight: 700;">ORDERS</a>
+            </nav>
+        </nav>
+    </header>
+
+    <main class="orders-container">
+        <div class="orders-header">
+            <h1>📊 Orders & Sales Dashboard</h1>
+            <button class="export-btn" onclick="exportToCSV()">📥 Export to CSV</button>
+        </div>
+
+        <div class="order-stats">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <div class="value" id="total-orders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="value" id="total-revenue">₹0</div>
+            </div>
+            <div class="stat-card">
+                <h3>COD Orders</h3>
+                <div class="value" id="cod-count">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Online Payments</h3>
+                <div class="value" id="online-count">0</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
+            <button class="filter-btn" onclick="filterOrders('cod')">Cash on Delivery</button>
+            <button class="filter-btn" onclick="filterOrders('card')">Card Payments</button>
+            <button class="filter-btn" onclick="filterOrders('online')">Online Payments</button>
+        </div>
+
+        <div class="orders-list" id="orders-list">
+            <div class="no-orders">No orders found</div>
+        </div>
+    </main>
+
+    <footer>
+        @2025 sachin | task5 ApexPlanet
+    </footer>
+
+    <script>
+        // Initialize variables
+        let allOrders = [];
+        let filteredOrders = [];
+
+        function updateOrderStatus(index, newStatus) {
+            if (newStatus === 'accepted') {
+                if (!confirm('Accept this order?')) return;
+                allOrders[index].status = newStatus;
+                localStorage.setItem('orders', JSON.stringify(allOrders));
+                loadOrders();
+                alert('Order accepted successfully!');
+            } else if (newStatus === 'rejected') {
+                if (!confirm('Are you sure you want to reject and remove this order?')) return;
+                // Remove order from array when rejected
+                allOrders.splice(index, 1);
+                localStorage.setItem('orders', JSON.stringify(allOrders));
+                loadOrders();
+                alert('Order rejected and removed!');
+            }
+        }
+
+        function loadOrders() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            
+            // Check if user is logged in
+            if (!currentUser || !currentUser.email) {
+                document.getElementById('orders-list').innerHTML = `
+                    <div class="no-orders">
+                        <h3>Please login to view your orders</h3>
+                        <p>You need to be logged in to see your order history.</p>
+                        <a href="login.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #ff6b35; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">Login Now</a>
+                    </div>
+                `;
+                document.querySelector('.order-stats').innerHTML = '';
+                document.querySelector('.filter-section').innerHTML = '';
+                return;
+            }
+            
+            // Get all orders but filter by current user's email
+            const allOrdersData = JSON.parse(localStorage.getItem('orders') || '[]');
+            allOrders = allOrdersData.filter(order => order.customer.email === currentUser.email);
+            
+            displayOrders(allOrders);
+            updateStats();
+        }
+
+        function displayOrders(orders) {
+            const ordersList = document.getElementById('orders-list');
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = `<div class="no-orders">No orders found</div>`;
+                return;
+            }
+
+            let html = `<div class="order-item-header">
+                <div>Order ID</div>
+                <div>Customer Info</div>
+                <div>Items</div>
+                <div>Payment Method</div>
+                <div>Total</div>
+                <div>Status & Action</div>
+            </div>`;
+
+            orders.forEach((order, index) => {
+                const orderId = `ORD-${Date.now()}-${index}`.substring(0, 15);
+                const date = new Date(order.timestamp);
+                const customer = order.customer;
+                const paymentMethod = getPaymentMethodLabel(order.paymentMethod, order.paymentApp);
+                const paymentClass = getPaymentClass(order.paymentMethod);
+                const status = order.status || 'pending';
+                
+                let itemsList = order.items.map(item => 
+                    `${item.name} x${item.quantity || 1}`
+                ).join(', ');
+
+                if (itemsList.length > 40) {
+                    itemsList = itemsList.substring(0, 40) + '...';
+                }
+
+                let statusHtml = `<div class="status-badge status-${status}">${status.toUpperCase()}</div>`;
+                let actionHtml = '';
+
+                if (status === 'pending') {
+                    actionHtml = `
+                        <div class="action-buttons">
+                            <button class="action-btn send-email-btn" onclick="previewEmail(${index})">📧 Email</button>
+                            <button class="action-btn accept-btn" onclick="updateOrderStatus(${index}, 'accepted')">✓ Accept</button>
+                            <button class="action-btn reject-btn" onclick="updateOrderStatus(${index}, 'rejected')">✕ Reject</button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div class="action-buttons">
+                            <button class="action-btn send-email-btn" onclick="previewEmail(${index})">📧 Email</button>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="order-item">
+                        <div class="order-cell">
+                            <div class="order-id">${orderId}</div>
+                            <div class="order-date">${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        </div>
+                        <div class="order-cell">
+                            <div class="customer-name">${customer.fname} ${customer.lname}</div>
+                            <div class="order-date">${customer.email}</div>
+                            <div class="order-date">${customer.city}, ${customer.zip}</div>
+                        </div>
+                        <div class="order-cell order-items">${itemsList}</div>
+                        <div class="order-cell">
+                            <div class="payment-badge payment-${paymentClass}">${paymentMethod}</div>
+                        </div>
+                        <div class="order-cell">
+                            <div class="order-total">₹${order.total.toLocaleString()}</div>
+                            <div style="font-size:0.85rem;color:#999;">${order.items.length} items</div>
+                        </div>
+                        <div class="order-cell">
+                            ${statusHtml}
+                            ${actionHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            ordersList.innerHTML = html;
+        }
+
+        function getPaymentMethodLabel(method, app) {
+            if (method === 'cod') return 'Cash on Delivery';
+            if (method === 'card') return 'Credit/Debit Card';
+            if (method === 'online') {
+                const appMap = { gpay: 'Google Pay', phonepe: 'PhonePe', paytm: 'Paytm' };
+                return appMap[app] || 'Online Payment';
+            }
+            return method;
+        }
+
+        function getPaymentClass(method) {
+            if (method === 'cod') return 'cod';
+            if (method === 'card') return 'card';
+            return 'online';
+        }
+
+        function updateStats() {
+            const totalOrders = allOrders.length;
+            const totalRevenue = allOrders.reduce((sum, order) => sum + order.total, 0);
+            const codCount = allOrders.filter(o => o.paymentMethod === 'cod').length;
+            const onlineCount = allOrders.filter(o => o.paymentMethod === 'online' || o.paymentMethod === 'card').length;
+
+            document.getElementById('total-orders').textContent = totalOrders;
+            document.getElementById('total-revenue').textContent = '₹' + totalRevenue.toLocaleString();
+            document.getElementById('cod-count').textContent = codCount;
+            document.getElementById('online-count').textContent = onlineCount;
+        }
+
+        function filterOrders(type) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter orders
+            if (type === 'all') {
+                displayOrders(allOrders);
+            } else if (type === 'cod') {
+                displayOrders(allOrders.filter(o => o.paymentMethod === 'cod'));
+            } else if (type === 'card') {
+                displayOrders(allOrders.filter(o => o.paymentMethod === 'card'));
+            } else if (type === 'online') {
+                displayOrders(allOrders.filter(o => o.paymentMethod === 'online'));
+            }
+        }
+
+        function exportToCSV() {
+            if (allOrders.length === 0) {
+                alert('No orders to export');
+                return;
+            }
+
+            let csv = 'Order ID,Order Date,Customer Name,Email,City,ZIP,Items,Total,Payment Method\n';
+
+            allOrders.forEach((order, index) => {
+                const orderId = `ORD-${Date.now()}-${index}`;
+                const date = new Date(order.timestamp).toLocaleDateString();
+                const items = order.items.map(i => `${i.name} x${i.quantity || 1}`).join(';');
+                const paymentMethod = getPaymentMethodLabel(order.paymentMethod, order.paymentApp);
+
+                csv += `"${orderId}","${date}","${order.customer.fname} ${order.customer.lname}","${order.customer.email}","${order.customer.city}","${order.customer.zip}","${items}",${order.total},"${paymentMethod}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `raj-store-orders-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Load orders on page load
+        document.addEventListener('DOMContentLoaded', loadOrders);
+
+        function generateEmailContent(order) {
+            const customer = order.customer;
+            const date = new Date(order.timestamp);
+            const itemsList = order.items.map(item => 
+                `${item.name} (₹${item.price}) x ${item.quantity || 1} = ₹${(item.price * (item.quantity || 1)).toLocaleString()}`
+            ).join('\n');
+            
+            const paymentMethod = getPaymentMethodLabel(order.paymentMethod, order.paymentApp);
+            const status = order.status || 'pending';
+
+            const emailContent = `
+Dear ${customer.fname} ${customer.lname},
+
+Thank you for your order! Here are your order details:
+
+═════════════════════════════════════════
+ORDER INFORMATION
+═════════════════════════════════════════
+
+Order Date: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}
+
+═════════════════════════════════════════
+SHIPPING ADDRESS
+═════════════════════════════════════════
+
+${customer.fname} ${customer.lname}
+${customer.address}
+${customer.city}, ${customer.zip}
+
+═════════════════════════════════════════
+ORDER ITEMS
+═════════════════════════════════════════
+
+${itemsList}
+
+═════════════════════════════════════════
+ORDER SUMMARY
+═════════════════════════════════════════
+
+Payment Method: ${paymentMethod}
+Order Total: ₹${order.total.toLocaleString()}
+Order Status: ${status.toUpperCase()}
+
+═════════════════════════════════════════
+PAYMENT INSTRUCTIONS
+═════════════════════════════════════════
+
+${getPaymentInstructions(order.paymentMethod, order.paymentApp)}
+
+═════════════════════════════════════════
+
+Thank you for shopping at RAJ STORE!
+For any queries, please reply to this email.
+
+Best regards,
+RAJ STORE Customer Service Team
+📞 Support Email: support@rajstore.com
+🌐 Website: www.rajstore.com
+
+═════════════════════════════════════════
+            `;
+            return emailContent.trim();
+        }
+
+        function getPaymentInstructions(method, app) {
+            if (method === 'cod') {
+                return `Your order will be delivered to your address.
+Please keep cash ready for payment upon delivery.
+Our delivery partner will contact you before arrival.`;
+            } else if (method === 'card') {
+                return `Your payment has been processed successfully.
+Your order will be shipped shortly.
+Track your order using the tracking number sent in next email.`;
+            } else if (method === 'online') {
+                const appName = { gpay: 'Google Pay', phonepe: 'PhonePe', paytm: 'Paytm' }[app] || 'Digital Wallet';
+                return `Your payment has been received via ${appName}.
+Your order will be shipped shortly.
+Track your order using the tracking number sent in next email.`;
+            }
+        }
+
+        function previewEmail(index) {
+            const order = allOrders[index];
+            const customer = order.customer;
+            const emailContent = generateEmailContent(order);
+
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #fff; border-radius: 8px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto; position: relative; width: 90%;">
+                    <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; background: #f44336; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">✕</button>
+                    
+                    <h2 style="color: #333; margin-top: 0;">📧 Order Confirmation Email</h2>
+                    
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <p style="margin: 5px 0;"><strong>To:</strong> ${customer.email}</p>
+                        <p style="margin: 5px 0;"><strong>Subject:</strong> Order Confirmation - RAJ STORE</p>
+                    </div>
+
+                    <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.6; color: #333; margin: 20px 0;">
+${emailContent}
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button onclick="copyEmailText('${btoa(emailContent)}')" style="flex: 1; padding: 12px; background: #2196f3; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">📋 Copy Email</button>
+                        <button onclick="sendEmailSimulation('${customer.email}', '${btoa(emailContent)}')" style="flex: 1; padding: 12px; background: #4caf50; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">✓ Send Email</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function copyEmailText(encodedText) {
+            const emailContent = atob(encodedText);
+            navigator.clipboard.writeText(emailContent).then(() => {
+                alert('Email content copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+
+        function sendEmailSimulation(email, encodedText) {
+            const confirmation = confirm(`Send order confirmation email to ${email}?`);
+            if (!confirmation) return;
+
+            // Simulate email sending (in real app, would use backend)
+            const sentEmails = JSON.parse(localStorage.getItem('sentEmails') || '[]');
+            sentEmails.push({
+                to: email,
+                subject: 'Order Confirmation - RAJ STORE',
+                timestamp: new Date().toISOString(),
+                content: atob(encodedText)
+            });
+            localStorage.setItem('sentEmails', JSON.stringify(sentEmails));
+
+            alert(`✓ Order confirmation email sent to ${email}!\n\nNote: This is a simulated email. To send real emails, integrate with EmailJS or your backend service.`);
+            document.querySelector('div[style*="position: fixed"]').remove();
+        }
+    </script>
+</body>
+</html>

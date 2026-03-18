@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ STORE - Sign Up</title>
+    <link rel="preconnect"href="https://fonts.googleapis.com">
+    <link rel="preconnect"href="https://fonts.gststic.com" crossorigin>
+    <link rel="https://fonts.googleapis.com/css2?family=poppins:weight@400;600;700&display=swap"rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">RAJ STORE</a>
+            <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="cart.html">CART</a>
+            <a href="login.html">LOGIN</a>
+            <a href="signup.html">SIGN UP</a>
+            <a href="profile.html">PROFILE</a>
+            </nav>
+        </nav>
+    </header>
+    <main class="auth-page">
+        <div class="auth-card">
+            <h1>SIGN UP</h1>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm">Confirm Password</label>
+                    <input type="password" id="confirm" placeholder="confirm your password" required>
+                </div>
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; color: #666;">Already have an account? <a href="login.html" style="color: #ff6b35; text-decoration: none; font-weight: 600;">Login here</a></p>
+        </div>
+    </main>
+    <script>
+        function handleSignup(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
+            
+            if (!name || !email || !password || !confirm) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            // Save user to localStorage
+            const userData = {
+                name: name,
+                email: email,
+                joinedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem('userToken', 'token_' + Math.random().toString(36).substr(2, 9));
+            
+            alert('Account created successfully!');
+            window.location.href = 'profile.html';
+        }
+    </script>
+
+</body>
+</html>

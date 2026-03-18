@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ STORE-login</title>
+    <link rel="preconnect"href="https://fonts.googleapis.com">
+    <link rel="preconnect"href="https://fonts.gststic.com" crossorigin>
+    <link rel="https://fonts.googleapis.com/css2?family=poppins:weight@400;600;700&display=swap"rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">RAJ STORE</a>
+            <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="cart.html">CART</a>
+            <a href="login.html">LOGIN</a>
+            <a href="signup.html">SIGN UP</a>
+            <a href="profile.html">PROFILE</a>
+            </nav>
+        </nav>
+    </header>
+    <main class="auth-page">
+        <div class="auth-card">
+            <h1>LOGIN</h1>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="enter your password" required>
+                </div>
+                <button type="submit" class="auth-btn">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; color: #666;">Don't have an account? <a href="signup.html" style="color: #ff6b35; text-decoration: none; font-weight: 600;">Sign up here</a></p>
+        </div>
+    </main>
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Save user to localStorage
+            const userData = {
+                email: email,
+                name: email.split('@')[0],
+                joinedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem('userToken', 'token_' + Math.random().toString(36).substr(2, 9));
+            
+            alert('Login successful!');
+            window.location.href = 'profile.html';
+        }
+    </script>
+
+</body>
+</html>

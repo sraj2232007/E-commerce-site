@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ Store - My Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">RAJ STORE</a>
+            <nav class="nav-links">
+                <a href="index.html">HOME</a>
+                <a href="cart.html">CART</a>
+                <a href="login.html">LOGIN</a>
+                <a href="signup.html">SIGN UP</a>
+                <a href="profile.html" style="color: #ff6b35; font-weight: 700;">PROFILE</a>
+            </nav>
+        </nav>
+    </header>
+
+    <main class="profile-page">
+        <div id="not-logged-in" style="text-align: center; padding: 40px; background: #fff; border-radius: 8px;">
+            <h2>You are not logged in</h2>
+            <p style="color: #666; font-size: 1.1rem;">Please log in to view your profile</p>
+            <div style="margin-top: 30px;">
+                <a href="login.html" style="display: inline-block; padding: 12px 30px; background: #ff6b35; color: #fff; text-decoration: none; border-radius: 5px; margin-right: 10px; font-weight: 600; transition: background 0.3s;">LOGIN</a>
+                <a href="signup.html" style="display: inline-block; padding: 12px 30px; background: #333; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600; transition: background 0.3s;">SIGN UP</a>
+            </div>
+        </div>
+
+        <div id="logged-in" style="display: none;">
+            <div class="profile card">
+                <h1>My Profile</h1>
+                <img src="ME.jpeg" alt="profile image" class="profile-img" style="width:150px; height:150px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 20px;">
+                <div class="profile-info">
+                    <div class="info-group">
+                        <label>NAME:</label>
+                        <span id="user-name">-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>EMAIL:</label>
+                        <span id="user-email">-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>JOINED:</label>
+                        <span id="user-joined">-</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        @2025 sachin | task5 ApexPlanet
+    </footer>
+
+    <script>
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const notLoggedIn = document.getElementById('not-logged-in');
+            const loggedIn = document.getElementById('logged-in');
+            
+            if (user && user.email) {
+                notLoggedIn.style.display = 'none';
+                loggedIn.style.display = 'block';
+                
+                // Display user information
+                document.getElementById('user-name').textContent = user.name || user.email.split('@')[0].toUpperCase();
+                document.getElementById('user-email').textContent = user.email;
+                
+                const joinedDate = new Date(user.joinedAt || Date.now());
+                document.getElementById('user-joined').textContent = joinedDate.toLocaleDateString();
+            } else {
+                notLoggedIn.style.display = 'block';
+                loggedIn.style.display = 'none';
+            }
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userToken');
+                alert('You have been logged out successfully!');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', checkLogin);
+    </script>
+</body>
+</html>
